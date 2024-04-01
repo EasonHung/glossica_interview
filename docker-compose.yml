@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+  glossika-mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: glossika_database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_INITDB_SQL: /docker-entrypoint-initdb.d/init.sql
+    volumes:
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+
+  glossika-redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+
+  golang:
+    build:
+      dockerfile: Dockerfile
+    ports:
+    - "8080:8080"
+    depends_on:
+      - glossika-mysql
+      - glossika-redis
